@@ -161,3 +161,11 @@ function updateTable(){
     tableRow.selectAll(".median-value")
             .text(yScale.invert(row["median-value"]));
 }
+
+function predictValue(){
+    
+}
+
+function train(){
+
+}
