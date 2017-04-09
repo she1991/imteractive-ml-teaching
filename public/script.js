@@ -35,9 +35,10 @@ function parseData(){
         //dispatch add row actions on app store for each
         for(var i = 0; i < d.length; i++){
             store.dispatch({type:ADD_ROW, row:Object.assign({},{
-                "index":parseInt(d[i].index),
-                "x-reading":parseFloat(d[i]["x-reading"]),
-                "y-reading":parseFloat(d[i]["y-reading"])
+                "index":parseInt(d[i]["INDEX"]),
+                "crime":parseFloat(d[i]["CRIM"]),
+                "rooms":parseFloat(d[i]["RM"]),
+                "median-value":parseFloat(d[i]["MEDV"])
             })});
         }
         //dispatch a loaded action on store after all data is loaded
@@ -56,11 +57,11 @@ function drawViz(){
         return;
     }
     var data = storeState.pointData;
-    var xValue = function(d){return d["x-reading"]};
+    var xValue = function(d){return d["rooms"]};
         xScale = d3.scaleLinear().range([0,width]);
     var xMap = function(d){return xScale(xValue(d));},
         xAxis = d3.axisBottom(xScale);
-    var yValue = function(d){return d["y-reading"]};
+    var yValue = function(d){return d["median-value"]};
         yScale = d3.scaleLinear().range([0,height]);
     var yMap = function(d){return yScale(yValue(d));},
         yAxis = d3.axisLeft(yScale);
@@ -98,12 +99,12 @@ function drawViz(){
 
 function dragged(d){
     d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "x":d["x"], "y":d["y"]}});
+    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":d["rooms"], "median-value":d["median-value"]}});
 }
 
 function dragEnded(d){
     // dispatch action row modified with row details
-    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "x":d["x"], "y":d["y"]}});
+    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":d["rooms"], "median-value":d["median-value"]}});
 }
 
 /*
@@ -123,13 +124,16 @@ function renderTable(){
             .attr("class", "_"+d.index);
         tableRow.append("td")
             .attr("class", "index")
-            .text(d["index"]);
+            .text(d["index"])
         tableRow.append("td")
-            .attr("class","x-reading")
-            .text(d["x-reading"]);
+            .attr("class", "crime")
+            .text(d["crime"]);
         tableRow.append("td")
-            .attr("class","y-reading")
-            .text(d["y-reading"])
+            .attr("class","rooms")
+            .text(d["rooms"]);
+        tableRow.append("td")
+            .attr("class","median-value")
+            .text(d["median-value"])
     });
 }
 
@@ -145,8 +149,8 @@ function updateTable(){
     var row = storeState.modifiedRow;
     //Locate table row with index of modified row
     var tableRow = d3.selectAll("._"+row["index"]);
-    tableRow.selectAll(".x-reading")
-        .text(xScale.invert(row["x"]));
-    tableRow.selectAll(".y-reading")
-            .text(yScale.invert(row["y"]));
+    tableRow.selectAll(".rooms")
+        .text(xScale.invert(row["rooms"]));
+    tableRow.selectAll(".median-value")
+            .text(yScale.invert(row["median-value"]));
 }
