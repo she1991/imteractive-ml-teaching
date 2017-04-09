@@ -57,18 +57,23 @@ function drawViz(){
         return;
     }
     var data = storeState.pointData;
-    var xValue = function(d){return d["rooms"]};
+    var xValue = function(d){return d["rooms"]},
         xScale = d3.scaleLinear().range([0,width]);
     var xMap = function(d){return xScale(xValue(d));},
         xAxis = d3.axisBottom(xScale);
-    var yValue = function(d){return d["median-value"]};
+    var yValue = function(d){return d["median-value"]},
         yScale = d3.scaleLinear().range([0,height]);
     var yMap = function(d){return yScale(yValue(d));},
         yAxis = d3.axisLeft(yScale);
+    var crimeValue = function(d){return d["crime"]},
+        crimeScale = d3.scaleLinear().range([255,0]);
+    var crimeMap = function(d){return crimeScale(crimeValue(d));};
+        
 
     data.forEach(function(d){
         xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
         yScale.domain([d3.max(data, yValue)+1, d3.min(data, yValue)-1]);
+        crimeScale.domain([d3.min(data, crimeValue), d3.max(data, crimeValue)]);
     });
 
     // x-axis
@@ -90,7 +95,9 @@ function drawViz(){
             .attr("r", 9)
             .attr("cx", xMap)
             .attr("cy", yMap)
-            .attr("fill", "red")
+            .attr("fill", function(d){
+                return d3.rgb(255, crimeMap(d), crimeMap(d));
+            })
             //dragging logic
             .call(d3.drag()
                     .on("drag", dragged)
