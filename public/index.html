@@ -1,8 +1,23 @@
 <html>
-<head>
-    <title>Interactive Machine Teaching</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="scripts/visualization.js"></script>
-</head>
-Hello world
+    <head>
+        <title>Visual data manipulation</title>
+        <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="script.js"></script>
+        <script src="actions.js"></script>
+        <script src="reducers.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css"></link>
+    </head>
+    <body onload="initViz()">
+        <div class="table">
+            <table class="tsv-data">
+                <tr class="header">
+                    <th>Index</th>
+                    <th>X Reading</th>
+                    <th>Y Reading</th>
+                </tr>
+            </table>
+        </div>
+        <div class="visualization"></div>
+    </body>
 </html>
