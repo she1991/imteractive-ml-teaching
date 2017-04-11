@@ -5,6 +5,7 @@ Action types
 const ADD_ROW = "ADD_ROW"
 const MODIFY_ROW = "MODIFY_ROW"
 const LOADED = "LOADED"
+const ADD_PREDICTION = "ADD_PREDICTION"
 /*
 Action creators
 */
@@ -19,4 +20,8 @@ function modifyRow( row ) {
 
 function loaded() {
     return {type:LOADED}
+}
+
+function addPrediction() {
+    return {type:ADD_PREDICTION}
 }

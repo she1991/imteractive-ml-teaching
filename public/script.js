@@ -9,6 +9,9 @@ var width = 1000;
 var height = 500;
 var xScale = null;
 var yScale = null;
+var indexValue = null;
+var crimeInput = null;
+var RoomsInput = null;
 
 function initViz(){
     //Find the div
@@ -20,6 +23,9 @@ function initViz(){
     //Add margin and create a grouped object
     viz = vizSVG.append("g")
                 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+    //Get the references to inputs
+    crimeInput = d3.select(".crime-input");
+    roomsInput = d3.select(".rooms-input");
     //Attach all subscribers to the store
     store.subscribe(drawViz);
     store.subscribe(renderTable);
@@ -57,17 +63,22 @@ function drawViz(){
         return;
     }
     var data = storeState.pointData;
-    var xValue = function(d){return d["rooms"]},
-        xScale = d3.scaleLinear().range([0,width]);
-    var xMap = function(d){return xScale(xValue(d));},
-        xAxis = d3.axisBottom(xScale);
-    var yValue = function(d){return d["median-value"]},
-        yScale = d3.scaleLinear().range([0,height]);
-    var yMap = function(d){return yScale(yValue(d));},
-        yAxis = d3.axisLeft(yScale);
-    var crimeValue = function(d){return d["crime"]},
-        crimeScale = d3.scaleLinear().range([255,0]);
+    var addedPredictions = storeState.predictedCount;
+
+    var xValue = function(d){return d["rooms"]};
+    xScale = d3.scaleLinear().range([0,width]);
+    var xMap = function(d){return xScale(xValue(d));};
+    var xAxis = d3.axisBottom(xScale);
+    var yValue = function(d){return d["median-value"]};
+    yScale = d3.scaleLinear().range([0,height]);
+    var yMap = function(d){return yScale(yValue(d));};
+    var yAxis = d3.axisLeft(yScale);
+    var crimeValue = function(d){return d["crime"]};
+    var crimeScale = d3.scaleLinear().range([255,0]);
     var crimeMap = function(d){return crimeScale(crimeValue(d));};
+    indexValue = function(d){return d["index"]};
+    //All values including and above this index have been added
+    var indexBorder = (d3.max(data, indexValue) + 1) - addedPredictions;
         
 
     data.forEach(function(d){
@@ -75,6 +86,9 @@ function drawViz(){
         yScale.domain([d3.max(data, yValue)+1, d3.min(data, yValue)-1]);
         crimeScale.domain([d3.min(data, crimeValue), d3.max(data, crimeValue)]);
     });
+
+    //Cleanup
+    viz.selectAll("*").remove();
 
     // x-axis
     viz.append("g")
@@ -92,7 +106,13 @@ function drawViz(){
         .data(data)
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 9)
+            .attr("r", function(d){
+                //check if index is above indexBorder
+                if(indexValue(d) >= indexBorder){
+                    return 20;
+                }
+                return 5;
+            })
             .attr("cx", xMap)
             .attr("cy", yMap)
             .attr("fill", function(d){
@@ -106,12 +126,13 @@ function drawViz(){
 
 function dragged(d){
     d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":d["rooms"], "median-value":d["median-value"]}});
+    //Convert cx position value to x-axis value
+    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
 }
 
 function dragEnded(d){
     // dispatch action row modified with row details
-    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":d["rooms"], "median-value":d["median-value"]}});
+    store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
 }
 
 /*
@@ -140,7 +161,7 @@ function renderTable(){
             .text(d["rooms"]);
         tableRow.append("td")
             .attr("class","median-value")
-            .text(d["median-value"])
+            .text(d["median-value"]);
     });
 }
 
@@ -157,13 +178,31 @@ function updateTable(){
     //Locate table row with index of modified row
     var tableRow = d3.selectAll("._"+row["index"]);
     tableRow.selectAll(".rooms")
-        .text(xScale.invert(row["rooms"]));
+        .text(row["rooms"]);
     tableRow.selectAll(".median-value")
-            .text(yScale.invert(row["median-value"]));
+        .text(row["median-value"]);
 }
 
 function predictValue(){
-    
+    var storeState = store.getState();
+    var data = storeState.pointData;
+    //Get the value from the input
+    var crimeVal = parseFloat(crimeInput.property("value"));
+    var roomsVal = parseFloat(roomsInput.property("value"));
+    //Predict the value
+    var predictedValue = 21.6;
+    //Add the value to the store
+    //Get the highest index value
+    var indexVal = d3.max(data, indexValue) + 1;
+    store.dispatch({type:ADD_PREDICTION});
+    store.dispatch({type:ADD_ROW, row:Object.assign({},{
+        "index":indexVal,
+        "crime":crimeVal,
+        "rooms":roomsVal,
+        "median-value":predictedValue
+    })});
+    //The table will be updated when store is updated
+    //The visualization will also update itself.
 }
 
 function train(){

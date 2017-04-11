@@ -1,13 +1,16 @@
 const initialState = {
     pointData : [],
     loaded : false,
-    modifiedRow : false
+    modifiedRow : false,
+    predictedCount : 0
 }
 
 function interactiveViz (state = initialState, action) {
     switch (action.type) {
         case ADD_ROW:
-            return Object.assign({}, state, state.pointData.push(action.row));
+            var data = Object.assign([], state.pointData);
+            data.push(Object.assign({},action.row));
+            return Object.assign({}, state, {pointData: data});
         case MODIFY_ROW:
             //find row with same index
             var data = Object.assign([], state.pointData);
@@ -19,9 +22,13 @@ function interactiveViz (state = initialState, action) {
             }
             //add new element to state
             data.push(action.row);
-            return Object.assign({}, state, {pointData:data, loaded:false, modifiedRow:action.row});
+            console.log(data);
+            return Object.assign({}, state, {pointData:data, loaded:false, modifiedRow: Object.assign({},action.row)});
         case LOADED:
             return Object.assign({}, state, {loaded:true});
+        case ADD_PREDICTION:
+            var predictedItems = state.predictedCount + 1;
+            return Object.assign({}, state, {predictedCount: predictedItems, loaded: true});
         default:
             return state;
     }
