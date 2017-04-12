@@ -6,6 +6,9 @@ const ADD_ROW = "ADD_ROW"
 const MODIFY_ROW = "MODIFY_ROW"
 const LOADED = "LOADED"
 const ADD_PREDICTION = "ADD_PREDICTION"
+const ADD_ML_SOURCE = "ADD_ML_SOURCE"
+const ADD_ML_DATASET = "ADD_ML_DATASET"
+const ADD_ML_MODEL = "ADD_ML_MODEL"
 /*
 Action creators
 */
@@ -24,4 +27,16 @@ function loaded() {
 
 function addPrediction() {
     return {type:ADD_PREDICTION}
+}
+
+function addMLSource() {
+    return {type:ADD_ML_SOURCE}
+}
+
+function addMLDataset() {
+    return {type:ADD_ML_DATASET}
+}
+
+function addMLModel() {
+    return {type:ADD_ML_MODEL}
 }

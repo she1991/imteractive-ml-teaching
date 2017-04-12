@@ -14,6 +14,9 @@ var crimeInput = null;
 var RoomsInput = null;
 
 function initViz(){
+    //Attach clean up code
+    window.onbeforeunload = cleanUp;
+    window.onunload = cleanUp;
     //Find the div
     var vizDiv = d3.select(".visualization");
     //Add the d3 visualization svg
@@ -48,7 +51,9 @@ function parseData(){
             })});
         }
         //dispatch a loaded action on store after all data is loaded
-        store.dispatch({type:LOADED}); 
+        store.dispatch({type:LOADED});
+        //Also train on the data you have
+        train();
     });
 }
 
@@ -122,6 +127,7 @@ function drawViz(){
             .call(d3.drag()
                     .on("drag", dragged)
                     .on("end", dragEnded));
+    renderPredictedRow();
 }
 
 function dragged(d){
@@ -141,28 +147,57 @@ Render table of data
 function renderTable(){
     //Verify loaded state of store
     var storeState = store.getState();
-    if(!storeState.loaded){
+    if(!storeState.loaded || storeState.predictedCount != 0){
         return;
     }
     //For every value
     //enter data into the table
     var table = d3.select(".tsv-data");
     storeState.pointData.forEach(function(d){
+    var tableRow = table.append("tr")
+        .attr("class", "_"+d.index);
+    tableRow.append("td")
+        .attr("class", "index")
+        .text(d["index"])
+    tableRow.append("td")
+        .attr("class", "crime")
+        .text(d["crime"]);
+    tableRow.append("td")
+        .attr("class","rooms")
+        .text(d["rooms"]);
+    tableRow.append("td")
+        .attr("class","median-value")
+        .text(d["median-value"]);
+    });
+}
+
+function renderPredictedRow(){
+    var storeState = store.getState();
+    if(storeState.predictedCount == 0){
+        return;
+    }
+    //Check if last row of data is present
+    var lastRow = storeState.pointData[storeState.pointData.length - 1];
+    var tableLastRow = d3.select("._"+lastRow["index"]);
+    //if not add it to table
+    var table = d3.select(".tsv-data");
+    if(tableLastRow.empty()){
+        //append a table row for new data point
         var tableRow = table.append("tr")
-            .attr("class", "_"+d.index);
+            .attr("class", "_"+lastRow["index"]);
         tableRow.append("td")
             .attr("class", "index")
-            .text(d["index"])
+            .text(lastRow["index"])
         tableRow.append("td")
             .attr("class", "crime")
-            .text(d["crime"]);
+            .text(lastRow["crime"]);
         tableRow.append("td")
             .attr("class","rooms")
-            .text(d["rooms"]);
+            .text(lastRow["rooms"]);
         tableRow.append("td")
             .attr("class","median-value")
-            .text(d["median-value"]);
-    });
+            .text(lastRow["median-value"]);
+    }
 }
 
 /*
@@ -194,8 +229,7 @@ function predictValue(){
     //Add the value to the store
     //Get the highest index value
     var indexVal = d3.max(data, indexValue) + 1;
-    store.dispatch({type:ADD_PREDICTION});
-    store.dispatch({type:ADD_ROW, row:Object.assign({},{
+    store.dispatch({type:ADD_PREDICTION, row:Object.assign({},{
         "index":indexVal,
         "crime":crimeVal,
         "rooms":roomsVal,
@@ -206,5 +240,19 @@ function predictValue(){
 }
 
 function train(){
+    console.log("train");
+    //perform cleanup
+    //create new source
+    //create new dataset
+    //create new model
+}
 
+function cleanUp(){
+    console.log("clean");
+    return "Hey";
+    //Perform cleanup of dataset source and model
+}
+
+function getDataAsCSV( data ){
+    //return data as a CSV string
 }
