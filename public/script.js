@@ -243,32 +243,44 @@ function train(){
     console.log("train");
     //perform cleanup
     cleanUp();
+    createNewSource();
+}
+
+function createNewSource(){
     //create new source
     //Get all the data as a CSV string to send over to server
     var csv = getDataAsCSV();
-    var postBody = {"data" : csv};
+    var postBody = JSON.stringify({"data" : csv});
+    var returnPromise = null;
     fetch("/source", {
         method: "POST",
-        body: csv,
+        body: postBody,
         headers: {
             "Content-Type": "application/json"
         }
     }).then(
         function(response){
-            console.log(response.text());
+            //Check for new source id
+            var sourceId = null;
+            response.json().then(function(json){
+                if(json.sourceId){
+                    console.log(json.sourceId);
+                    //update store's sourceId
+                    store.dispatch({type:ADD_ML_SOURCE, row:)
+                    return {"sourceId": json.sourceId};
+                }
+            }).then(createNewDataset);
         },
         function(error){
-            console.log(error.message);
+            //Return unsuccessful promise
+            console.log(error);
+            return {"error": error};
         }
     );
-    //create new dataset
-    //create new model
 }
 
-function createNewSource(){
-}
-
-function createNewDataset(){
+function createNewDataset(sourceIdObj){
+    
 }
 
 function createNewModel(){
