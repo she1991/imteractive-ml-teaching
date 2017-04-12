@@ -242,9 +242,36 @@ function predictValue(){
 function train(){
     console.log("train");
     //perform cleanup
+    cleanUp();
     //create new source
+    //Get all the data as a CSV string to send over to server
+    var csv = getDataAsCSV();
+    var postBody = {"data" : csv};
+    fetch("/source", {
+        method: "POST",
+        body: csv,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(
+        function(response){
+            console.log(response.text());
+        },
+        function(error){
+            console.log(error.message);
+        }
+    );
     //create new dataset
     //create new model
+}
+
+function createNewSource(){
+}
+
+function createNewDataset(){
+}
+
+function createNewModel(){
 }
 
 function cleanUp(){
@@ -253,6 +280,33 @@ function cleanUp(){
     //Perform cleanup of dataset source and model
 }
 
-function getDataAsCSV( data ){
+function getDataAsCSV(){
     //return data as a CSV string
+    //Get the data
+    var storeState = store.getState();
+    var data = storeState.pointData;
+    var opString = "";
+    var headersDone = false;
+    //for the first element, record and push all headers
+    data.forEach(function(d){
+        if(!headersDone){
+            for(propName in d){
+                opString = opString + propName + ",";
+            }
+            //remove trailing comma
+            opString = opString.slice(0, -1);
+            //add new line
+            opString = opString + "\n";
+            headersDone = true;
+        }
+        for(propName in d){
+            opString = opString + d[propName] + ",";
+        }
+        //remove trailing comma
+        opString = opString.slice(0, -1);
+        //add new line
+        opString = opString + "\n";
+    });
+    return opString;
+    //push all data
 }
