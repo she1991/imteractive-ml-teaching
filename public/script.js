@@ -266,7 +266,7 @@ function createNewSource(){
                 if(json.sourceId){
                     console.log(json.sourceId);
                     //update store's sourceId
-                    store.dispatch({type:ADD_ML_SOURCE, row:)
+                    store.dispatch({type:ADD_ML_SOURCE, row: {"mlSource" : json.sourceId}});
                     return {"sourceId": json.sourceId};
                 }
             }).then(createNewDataset);
@@ -280,16 +280,98 @@ function createNewSource(){
 }
 
 function createNewDataset(sourceIdObj){
-    
+    //If sourceIdObj contains an error..abort
+    if(sourceIdObj.hasOwnProperty("error")){
+        //error is present
+        return sourceIdObj;
+    }
+    else{
+        //fetch call for creating dataset
+        //We have the sourceId from the sourceIdObj
+        var postBody = JSON.stringify(sourceIdObj);
+        fetch("/dataset", {
+        method: "POST",
+        body: postBody,
+        headers: {
+            "Content-Type": "application/json"
+        }
+        }).then(
+            function(response){
+                //Check for new dataset id
+                var datasetId = null;
+                response.json().then(function(json){
+                    if(json.datasetId){
+                        console.log(json.datasetId);
+                        //update store's datasetId
+                        store.dispatch({type:ADD_ML_DATASET, row: {"mlDataset" : json.datasetId}});
+                        return {"datasetId": json.datasetId};
+                    }
+                }).then(createNewModel);
+            },
+            function(error){
+                //Return unsuccessful promise
+                console.log(error);
+                return {"error": error};
+            }
+        );
+    }
 }
 
-function createNewModel(){
+function createNewModel(datasetIdObj){
+    //If datasetIdObj contains an error..abort
+    if(datasetIdObj.hasOwnProperty("error")){
+        //error is present
+        return datasetIdObj;
+    }
+    else{
+        //fetch call for creating dataset
+        //We have the sourceId from the sourceIdObj
+        var postBody = JSON.stringify(datasetIdObj);
+        fetch("/model", {
+        method: "POST",
+        body: postBody,
+        headers: {
+            "Content-Type": "application/json"
+        }
+        }).then(
+            function(response){
+                //Check for new dataset id
+                var modelId = null;
+                response.json().then(function(json){
+                    if(json.modelId){
+                        console.log(json.modelId);
+                        //update store's modelId
+                        store.dispatch({type:ADD_ML_MODEL, row: {"mlModel" : json.modelId}});
+                        return {"datasetId": json.modelId};
+                    }
+                });
+            },
+            function(error){
+                //Return unsuccessful promise
+                console.log(error);
+                return {"error": error};
+            }
+        );
+    }
 }
 
 function cleanUp(){
     console.log("clean");
-    return "Hey";
     //Perform cleanup of dataset source and model
+    //get all ids togetehr into and object and send to cleanup service
+    var storeState = store.getState();
+    var payloadObj = JSON.stringify({
+        "sourceId" : storeState.mlSource,
+        "datasetId" : storeState.mlDataset,
+        "modelId" : storeState.mlModel
+    });
+    fetch("/cleanup", {
+        method: "POST",
+        body: payloadObj,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
 }
 
 function getDataAsCSV(){

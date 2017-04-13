@@ -34,11 +34,11 @@ function interactiveViz (state = initialState, action) {
             data.push(Object.assign({},action.row));
             return Object.assign({}, state, {predictedCount: predictedItems, loaded: true, pointData: data});
         case ADD_ML_SOURCE:
-            return Object.assign({}, state, {mlSource : action.mlSource});
+            return Object.assign({}, state, {mlSource : action.row.mlSource});
         case ADD_ML_DATASET:
-            return Object.assign({}, state, {mlDataset : action.mlDataset});
+            return Object.assign({}, state, {mlDataset : action.row.mlDataset});
         case ADD_ML_MODEL:
-            return Object.assign({}, state, {mlModel : action.mlModel});
+            return Object.assign({}, state, {mlModel : action.row.mlModel});
         default:
             return state;
     }
