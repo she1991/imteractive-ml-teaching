@@ -5,7 +5,8 @@ const initialState = {
     predictedCount : 0,
     mlSource : null,
     mlDataset : null,
-    mlModel : null
+    mlModel : null,
+    mlPrediction : null
 }
 
 function interactiveViz (state = initialState, action) {
@@ -39,6 +40,8 @@ function interactiveViz (state = initialState, action) {
             return Object.assign({}, state, {mlDataset : action.row.mlDataset});
         case ADD_ML_MODEL:
             return Object.assign({}, state, {mlModel : action.row.mlModel});
+        case ADD_ML_PREDICTION:
+            return Object.assign({}, state, {mlPrediction : action.row.mlPrediction});
         default:
             return state;
     }

@@ -15,7 +15,7 @@
     "ejs": "2.4.1",
     "express": "4.13.3",
     "pg": "4.x",
-    "fetch": "1.1.0"
+    "node-fetch": "1.6.3"
   },
   "repository": {
     "type": "git",

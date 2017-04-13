@@ -224,19 +224,50 @@ function predictValue(){
     //Get the value from the input
     var crimeVal = parseFloat(crimeInput.property("value"));
     var roomsVal = parseFloat(roomsInput.property("value"));
-    //Predict the value
-    var predictedValue = 21.6;
     //Add the value to the store
     //Get the highest index value
     var indexVal = d3.max(data, indexValue) + 1;
-    store.dispatch({type:ADD_PREDICTION, row:Object.assign({},{
-        "index":indexVal,
-        "crime":crimeVal,
-        "rooms":roomsVal,
-        "median-value":predictedValue
-    })});
-    //The table will be updated when store is updated
-    //The visualization will also update itself.
+    //Get the model value
+    var model = storeState.mlModel;
+    //Call the prediction service
+    var payload = JSON.stringify({
+        'model' : model,
+        'input_data' : {
+            '000000' : indexVal,
+            '000001' : crimeVal,
+            '000002' : roomsVal
+        }
+    });
+    fetch("/prediction", {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(
+        function(response){
+            response.json().then(function(json){
+                if(json.medianValue && json.predictionId){
+                    //Add this value to the store and the system will handle the rest
+                    store.dispatch({type:ADD_PREDICTION, row:Object.assign({},{
+                        "index":indexVal,
+                        "crime":crimeVal,
+                        "rooms":roomsVal,
+                        "median-value":json.medianValue
+                    })});
+                    store.dispatch({type:ADD_ML_PREDICTION, row: Object.assign({},{
+                        "mlPrediction":json.predictionId
+                    })});
+                    return {"predictionId" : json.predictionId};
+                }
+            }).then(deletePrediction);
+        },
+        function(error){
+            //Return unsuccessful promise
+            console.log(error);
+            return {"error": error};
+        }
+    );
 }
 
 function train(){
@@ -289,6 +320,8 @@ function createNewDataset(sourceIdObj){
         //fetch call for creating dataset
         //We have the sourceId from the sourceIdObj
         var postBody = JSON.stringify(sourceIdObj);
+        //give BigML some time to process the source
+        setTimeout(function(){
         fetch("/dataset", {
         method: "POST",
         body: postBody,
@@ -314,6 +347,7 @@ function createNewDataset(sourceIdObj){
                 return {"error": error};
             }
         );
+        }, 3000);
     }
 }
 
@@ -327,6 +361,8 @@ function createNewModel(datasetIdObj){
         //fetch call for creating dataset
         //We have the sourceId from the sourceIdObj
         var postBody = JSON.stringify(datasetIdObj);
+        //give BigML some time to process the dataset
+        setTimeout(function(){
         fetch("/model", {
         method: "POST",
         body: postBody,
@@ -352,6 +388,7 @@ function createNewModel(datasetIdObj){
                 return {"error": error};
             }
         );
+        }, 3000);
     }
 }
 
@@ -372,6 +409,24 @@ function cleanUp(){
             "Content-Type": "application/json"
         }
     });
+}
+
+function deletePrediction(predictionIdObj){
+    //Delete the prediction
+    //give some time for prediction and store to gain state
+    setTimeout(function(){
+    var storeState = store.getState();
+    var payloadObj = JSON.stringify({
+        "predictionId" : predictionIdObj.predictionId
+    });
+    fetch("/deleteprediction", {
+        method: "POST",
+        body: payloadObj,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    }, 1000);
 }
 
 function getDataAsCSV(){

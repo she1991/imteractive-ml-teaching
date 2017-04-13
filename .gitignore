@@ -6,7 +6,7 @@ npm-debug.log
 *.env
 *.dev
 .DS_Store
-
+.*.sw*
 # Docker
 Dockerfile
 docker-compose.yml
