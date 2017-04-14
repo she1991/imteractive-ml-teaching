@@ -10,6 +10,7 @@ const ADD_ML_SOURCE = "ADD_ML_SOURCE"
 const ADD_ML_DATASET = "ADD_ML_DATASET"
 const ADD_ML_MODEL = "ADD_ML_MODEL"
 const ADD_ML_PREDICTION = "ADD_ML_PREDICTION"
+const RESET_PREDICTION = "RESET_PREDICTION"
 /*
 Action creators
 */
@@ -44,4 +45,8 @@ function addMLModel() {
 
 function addMLPrediction() {
     return {type:ADD_ML_PREDICTION}
+}
+
+function resetPrediction(){
+    return {type:RESET_PREDICTION}
 }

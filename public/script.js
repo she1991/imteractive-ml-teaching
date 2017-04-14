@@ -150,6 +150,13 @@ function renderTable(){
     if(!storeState.loaded || storeState.predictedCount != 0){
         return;
     }
+    //second check for train issue
+    //Check if last row of data is present
+    var lastRow = storeState.pointData[storeState.pointData.length - 1];
+    var tableLastRow = d3.select("._"+lastRow["index"]);
+    if(!tableLastRow.empty()){
+        return;
+    }
     //For every value
     //enter data into the table
     var table = d3.select(".tsv-data");
@@ -219,6 +226,9 @@ function updateTable(){
 }
 
 function predictValue(){
+    //set the top div to be loading-mask
+    var topDiv = d3.select(".top-div");
+    topDiv.attr('class', 'loading-mask');
     var storeState = store.getState();
     var data = storeState.pointData;
     //Get the value from the input
@@ -258,6 +268,10 @@ function predictValue(){
                     store.dispatch({type:ADD_ML_PREDICTION, row: Object.assign({},{
                         "mlPrediction":json.predictionId
                     })});
+                    //reset top div
+                    //remove loading-mask
+                    var topDiv = d3.select(".loading-mask");
+                    topDiv.attr('class', 'top-div');
                     return {"predictionId" : json.predictionId};
                 }
             }).then(deletePrediction);
@@ -274,6 +288,11 @@ function train(){
     console.log("train");
     //perform cleanup
     cleanUp();
+    //reset the predicted count on the store
+    //set the top div to be loading-mask
+    var topDiv = d3.select(".top-div");
+    topDiv.attr('class', 'loading-mask');
+    store.dispatch({type: RESET_PREDICTION});
     createNewSource();
 }
 
@@ -378,6 +397,10 @@ function createNewModel(datasetIdObj){
                         console.log(json.modelId);
                         //update store's modelId
                         store.dispatch({type:ADD_ML_MODEL, row: {"mlModel" : json.modelId}});
+                        //remove the class on the top div
+                        //set the top div to be loading-mask
+                        var topDiv = d3.select(".loading-mask");
+                        topDiv.attr('class', 'top-div');
                         return {"datasetId": json.modelId};
                     }
                 });

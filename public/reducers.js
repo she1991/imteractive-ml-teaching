@@ -42,6 +42,8 @@ function interactiveViz (state = initialState, action) {
             return Object.assign({}, state, {mlModel : action.row.mlModel});
         case ADD_ML_PREDICTION:
             return Object.assign({}, state, {mlPrediction : action.row.mlPrediction});
+        case RESET_PREDICTION:
+            return Object.assign({}, state, {predictedCount: 0, loaded: true});
         default:
             return state;
     }
