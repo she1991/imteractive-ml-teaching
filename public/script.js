@@ -4,7 +4,7 @@ Visualization script in js
 
 var vizSVG = null;
 var viz = null;
-var margin = {top: 20, right: 10, bottom: 20, left: 30};
+var margin = {top: 20, right: 10, bottom: 50, left: 50};
 var width = 1000;
 var height = 500;
 var xScale = null;
@@ -22,6 +22,8 @@ var xMap = null;
 var yScale = null;
 var yValue = null;
 var yMap = null;
+
+var predictedDotColor = "#F44336";
 
 function initViz(){
     //Attach clean up code
@@ -111,7 +113,7 @@ function drawViz(){
 
     // x-axis
     viz.append("g")
-        .attr("class", "x axis")
+        .attr("class", "x  axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
@@ -124,13 +126,21 @@ function drawViz(){
     viz.selectAll(".dot")
         .data(data)
             .enter().append("circle")
-            .attr("class", "dot")
+            .attr("class", function(d){
+                if(indexValue(d) >= indexBorder){
+                    return "predicted-dot";
+                }
+                return "dot";
+            })
             .attr("r", function(d){
                 //check if index is above indexBorder
                 if(indexValue(d) >= indexBorder){
                     return crimeMap(d);
                 }
                 return crimeMap(d);
+            })
+            .style("fill", function(d) {
+
             })
             .attr("cx", xMap)
             .attr("cy", yMap)
@@ -140,6 +150,23 @@ function drawViz(){
                     .on("drag", dragged)
                     .on("end", dragEnded));
     renderPredictedRow();
+
+    viz.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1.5em")
+        .style("text-anchor", "middle")
+        .text("Market Value (Thousands)");
+
+    viz.append("text")   
+        .attr("class", "axis-label")          
+        .attr("transform",
+            "translate(" + (width/2) + " ," + 
+            (height + margin.top + 20) + ")")
+        .style("text-anchor", "middle")
+        .text("Number of Rooms (function of property size)");
 }
 
 function dragStart(d){

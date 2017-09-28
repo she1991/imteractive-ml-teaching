@@ -18,6 +18,11 @@ body{
   fill: rgba(5, 209, 255, 0.75);
 }
 
+.predicted-dot {
+  stroke: none;
+  fill: rgba(244, 67, 54, 0.75);
+}
+
 .ghost-dot {
   stroke: none;
   fill: rgba(255, 255, 255, 0.15);
@@ -38,6 +43,10 @@ table, th, td {
 
 td {
     width: 200px;
+}
+
+.axis-label {
+  fill: rgba(5, 209, 255, 1);
 }
 
 /*
