@@ -13,6 +13,16 @@ var indexValue = null;
 var crimeInput = null;
 var RoomsInput = null;
 
+var crimeScale = null;
+var crimeValue = null;
+var crimeMap = null;
+var xScale = null;
+var xValue = null;
+var xMap = null;
+var yScale = null;
+var yValue = null;
+var yMap = null;
+
 function initViz(){
     //Attach clean up code
     window.onbeforeunload = cleanUp;
@@ -21,8 +31,12 @@ function initViz(){
     var vizDiv = d3.select(".visualization");
     //Add the d3 visualization svg
     vizSVG = vizDiv.append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
+                //.attr("width", width + margin.left + margin.right)
+                //.attr("height", height + margin.top + margin.bottom);
+		.attr("width", "100%")
+                //.attr("height", "100%")
+		.attr("viewBox", "0 0 "+ (width + margin.left + margin.right) +" "+ (height + margin.top + margin.bottom) )
+		.attr("preserveAspectRatio", "none");
     //Add margin and create a grouped object
     viz = vizSVG.append("g")
                 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
@@ -70,17 +84,17 @@ function drawViz(){
     var data = storeState.pointData;
     var addedPredictions = storeState.predictedCount;
 
-    var xValue = function(d){return d["rooms"]};
+    xValue = function(d){return d["rooms"]};
     xScale = d3.scaleLinear().range([0,width]);
-    var xMap = function(d){return xScale(xValue(d));};
+    xMap = function(d){return xScale(xValue(d));};
     var xAxis = d3.axisBottom(xScale);
-    var yValue = function(d){return d["median-value"]};
+    yValue = function(d){return d["median-value"]};
     yScale = d3.scaleLinear().range([0,height]);
-    var yMap = function(d){return yScale(yValue(d));};
+    yMap = function(d){return yScale(yValue(d));};
     var yAxis = d3.axisLeft(yScale);
-    var crimeValue = function(d){return d["crime"]};
-    var crimeScale = d3.scaleLinear().range([255,0]);
-    var crimeMap = function(d){return crimeScale(crimeValue(d));};
+    crimeValue = function(d){return d["crime"]};
+    crimeScale = d3.scaleLinear().range([10,30]);
+    crimeMap = function(d){return crimeScale(crimeValue(d));};
     indexValue = function(d){return d["index"]};
     //All values including and above this index have been added
     var indexBorder = (d3.max(data, indexValue) + 1) - addedPredictions;
@@ -114,31 +128,57 @@ function drawViz(){
             .attr("r", function(d){
                 //check if index is above indexBorder
                 if(indexValue(d) >= indexBorder){
-                    return 20;
+                    return crimeMap(d);
                 }
-                return 5;
+                return crimeMap(d);
             })
             .attr("cx", xMap)
             .attr("cy", yMap)
-            .attr("fill", function(d){
-                return d3.rgb(255, crimeMap(d), crimeMap(d));
-            })
             //dragging logic
             .call(d3.drag()
+		    .on("start", dragStart)
                     .on("drag", dragged)
                     .on("end", dragEnded));
     renderPredictedRow();
+}
+
+function dragStart(d){
+   //Drawing ghost dot
+   viz.append("circle")
+	    .attr("class", "ghost-dot")
+	    .attr("r", d3.select(this).attr("r"))
+            .attr("cx", d3.select(this).attr("cx"))
+            .attr("cy", d3.select(this).attr("cy"));
 }
 
 function dragged(d){
     d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
     //Convert cx position value to x-axis value
     store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
+    //Remove previous x and y axis cross hairs
+    viz.selectAll(".crosshair").remove();
+    //Draw the x and y axis cross hairs
+    viz.append("line")
+	.attr("class", "crosshair")
+	.attr("x1", 0)
+	.attr("y1", d3.select(this).attr("cy"))
+	.attr("x2", d3.select(this).attr("cx"))
+	.attr("y2", d3.select(this).attr("cy"));
+    viz.append("line")
+        .attr("class", "crosshair")
+        .attr("x1", d3.select(this).attr("cx"))
+        .attr("y1", d3.select(this).attr("cy"))
+        .attr("x2", d3.select(this).attr("cx"))
+        .attr("y2", height);
 }
 
 function dragEnded(d){
     // dispatch action row modified with row details
     store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
+    // remove ghost dot
+    viz.selectAll(".ghost-dot").remove();
+    //Remove previous x and y axis cross hairs
+    viz.selectAll(".crosshair").remove();
 }
 
 /*
@@ -271,7 +311,7 @@ function predictValue(){
                     //reset top div
                     //remove loading-mask
                     var topDiv = d3.select(".loading-mask");
-                    topDiv.attr('class', 'top-div');
+                    topDiv.attr('class', 'top-div container-fluid');
                     return {"predictionId" : json.predictionId};
                 }
             }).then(deletePrediction);
@@ -400,7 +440,7 @@ function createNewModel(datasetIdObj){
                         //remove the class on the top div
                         //set the top div to be loading-mask
                         var topDiv = d3.select(".loading-mask");
-                        topDiv.attr('class', 'top-div');
+                        topDiv.attr('class', 'top-div container-fluid');
                         return {"datasetId": json.modelId};
                     }
                 });

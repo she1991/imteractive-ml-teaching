@@ -4,28 +4,26 @@
         <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+	<script src=”https://code.jquery.com/jquery-1.10.2.min.js”></script>
+	<script src=”http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js”></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="script.js"></script>
         <script src="actions.js"></script>
         <script src="reducers.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css"></link>
     </head>
     <body onload="initViz()">
-    <div class="top-div">
-        <div class="visualization"></div>
-        <br/><br/>
-        <h2>Please teach this ML system something about home valuations</h2>
-        <h4>Click 'predict' button to predict the median-value depending on the values in crime and rooms boxes.</h4>
-        <h5>New data point appears as a larger circle</h5>
-        <h4>Click 'train' to train on all modified and added data points</h4>
-        <h5>Now all added nodes appear normal instead of large circles</h5>
-        <div>
-            <b>Crime:</b><input type="text" class="crime-input" value="1.38799"></input>
-            <b>Rooms:</b><input type="text" class="rooms-input" value="6.43"></input>
-            <button class="predict" onclick="predictValue()">Predict</button>
-            <button class="train" onclick="train()">Train</button>
-        </div>
-        <br/><br/>
-        <div class="table">
+    <div class="top-div container-fluid">
+	<div class="row">
+        	<div class="visualization col-xs-8"></div>
+        	<div class="col-xs-4">
+            		<b>Crime:</b><input type="text" class="crime-input" value="1.38799"></input>
+            		<b>Rooms:</b><input type="text" class="rooms-input" value="6.43"></input>
+            		<button class="predict" onclick="predictValue()">Predict</button>
+            		<button class="train" onclick="train()">Train</button>
+        	</div>
+	</div>
+        <div class="table row">
             <table class="tsv-data">
                 <tr class="header">
                     <th>Index</th>

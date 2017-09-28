@@ -1,15 +1,35 @@
+body{
+   background-color: #000000;
+}
+
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: #ffffff;
   shape-rendering: crispEdges;
 }
 
-.dot {
-  stroke: #000;
+.axis .tick text{
+  fill: #ffffff;
 }
+
+.dot {
+  stroke: none;
+  fill: rgba(5, 209, 255, 0.75);
+}
+
+.ghost-dot {
+  stroke: none;
+  fill: rgba(255, 255, 255, 0.15);
+}
+
+.table{
+  display: none;
+}
+
 table {
     border-collapse: collapse;
+    visibility: hidden;
 }
 
 table, th, td {
@@ -38,7 +58,7 @@ element over the whole parent element
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 /*
@@ -72,4 +92,9 @@ image using the content attribute.
   left: calc(50% - 12px);
   animation: 2s linear 0s normal none infinite running spin;
   filter: drop-shadow(0 0 2 rgba(0, 0, 0, 0.33));
+}
+
+.crosshair {
+  stroke: #ffffff;
+  fill: none;
 }
