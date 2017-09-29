@@ -25,6 +25,15 @@ var yMap = null;
 
 var predictedDotColor = "#F44336";
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>Market Value:</strong> &nbsp;<span>" + d["median-value"] + "</span><br/>\
+            <strong>Crime:</strong> &emsp;&emsp;&emsp;&nbsp;<span>" + d["crime"] + "</span><br/>\
+            <strong>Rooms:</strong> &emsp;&emsp;&emsp;<span>" + d["rooms"] + "</span><br/>";
+  });
+
 function initViz(){
     //Attach clean up code
     window.onbeforeunload = cleanUp;
@@ -147,8 +156,10 @@ function drawViz(){
             //dragging logic
             .call(d3.drag()
 		    .on("start", dragStart)
-                    .on("drag", dragged)
-                    .on("end", dragEnded));
+                .on("drag", dragged)
+                .on("end", dragEnded))
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
     renderPredictedRow();
 
     viz.append("text")
@@ -167,6 +178,8 @@ function drawViz(){
             (height + margin.top + 20) + ")")
         .style("text-anchor", "middle")
         .text("Number of Rooms (function of property size)");
+    
+    viz.call(tip);
 }
 
 function dragStart(d){

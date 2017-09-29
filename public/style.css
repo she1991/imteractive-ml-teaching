@@ -47,6 +47,7 @@ td {
 
 .axis-label {
   fill: rgba(5, 209, 255, 1);
+  font-size: 0.7rem;
 }
 
 /*
@@ -106,4 +107,14 @@ image using the content attribute.
 .crosshair {
   stroke: #ffffff;
   fill: none;
+}
+
+/* Tooltips */
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #000000;
+  border-radius: 2px;
 }
