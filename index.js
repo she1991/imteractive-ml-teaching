@@ -49,6 +49,7 @@ app.post('/source', function(request, response){
         )
     }).then(
         function(resp){
+            console.log(resp);
             resp.json().then(function(json){
                 //parse this response for the source id
                 if(json.resource){

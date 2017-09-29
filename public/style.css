@@ -2,6 +2,14 @@ body{
    background-color: #000000;
 }
 
+nav {
+  background-color: #00BFA5;
+}
+
+.logo-image {
+  padding: 1rem;
+}
+
 .axis path,
 .axis line {
   fill: none;

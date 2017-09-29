@@ -78,7 +78,7 @@ function parseData(){
         //dispatch a loaded action on store after all data is loaded
         store.dispatch({type:LOADED});
         //Also train on the data you have
-        train();
+        //train();
     });
 }
 
@@ -167,7 +167,7 @@ function drawViz(){
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
         .attr("x",0 - (height / 2))
-        .attr("dy", "1.5em")
+        .attr("dy", "1.7em")
         .style("text-anchor", "middle")
         .text("Market Value (Thousands)");
 
