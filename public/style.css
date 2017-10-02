@@ -1,13 +1,28 @@
-body{
-   background-color: #000000;
-}
-
 nav {
   background-color: #00BFA5;
 }
 
 .logo-image {
   padding: 1rem;
+}
+
+.brand-logo {
+  font-family: 'Roboto Mono';
+  font-weight: 300;
+  padding-left: 2rem!important;
+  font-size: 1.2rem!important;
+}
+
+.into-card {
+  min-height: 20vh;
+  min-width: 100vw;
+  background-color: #60BFE9;
+}
+
+.centered-area {
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .axis path,
@@ -126,3 +141,5 @@ image using the content attribute.
   color: #000000;
   border-radius: 2px;
 }
+
+
