@@ -89,7 +89,7 @@ function parseData(){
         //dispatch a loaded action on store after all data is loaded
         store.dispatch({type:LOADED});
         //Also train on the data you have
-        //train();
+        train();
     });
 }
 
@@ -298,7 +298,7 @@ function dragEnded(d){
     viz.selectAll(".ghost-dot").remove();
     //Remove previous x and y axis cross hairs
     viz.selectAll(".crosshair").remove();
-    //train();
+    train();
 }
 
 /*
