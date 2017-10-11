@@ -5,14 +5,24 @@
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="d3-tip.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+        <script type="text/javascript" src="smooth-scroll.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono:300,400" rel="stylesheet">
         <script src="script.js"></script>
         <script src="actions.js"></script>
         <script src="reducers.js"></script>
+        <script src="tether.js"></script>
+        <script src="shepherd.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css"></link>
+        <link rel="stylesheet" type="text/css" href="shepherd-theme-arrows.css"></link>
     </head>
     <body onload="initViz()">
+        <div class="loading-wrapper">
+          <div align="center" class="message-area">
+            <img src="assets/loading.gif" />
+            <h5>Training on data-set. Please wait.</h5>
+          </div>
+        </div>
         <nav>
             <div class="nav-wrapper">
                 <a href="#" class="brand-logo">
@@ -23,31 +33,70 @@
                 </ul>
             </div>
         </nav>
-        <div class="into-card">
-            <img src="assets/construction-logo.jpg" />
+        <div class="intro-card ">
+            <img align="left" class="banner-img" src="assets/construction-logo.jpg" />
             <div class="centered-area">
-                dwsffsf fsfsfs
+                <h2>What is Interactive Machine Learning?</h2>
+                <p>Machine learning with a human in the learning loop, observing the result of learning and providing input meant to improve the learning outcome. [<a href="http://iml.media.mit.edu/"><b>1</b></a>]</p>
             </div>
         </div>
-    	<div class="row">
-            	<div class="visualization col-xs-8"></div>
-            	<div class="col-xs-4">
-                		<b>Crime:</b><input type="text" class="crime-input" value="1.38799"></input>
-                		<b>Rooms:</b><input type="text" class="rooms-input" value="6.43"></input>
-                		<button class="predict" onclick="predictValue()">Predict</button>
-                		<button class="train" onclick="train()">Train</button>
-            	</div>
-    	</div>
-            <div class="table row">
-                <table class="tsv-data">
-                    <tr class="header">
-                        <th>Index</th>
-                        <th>Crime - Color</th>
-                        <th>Rooms - X Axis</th>
-                        <th>Median Value - Y Axis</th>
-                    </tr>
-                </table>
+        <div class="explaination-card">
+            <div class="centered-area">
+                <h2>Lets look at a real-estate pricing model..</h2>
+                <p>Using the crime rates and property size, we have designed a model that predicts the market value of a property.</p>
+                <h2>Influence the model using your human wisdom..</h2>
+                <p>Move around the data points by dragging them to re-train the model to suit your understanding of the real-estate market.</p>
+                <p>Use the 'Predict' button to check the model against your expectations.</p>
+                <p>Keep adjusting the model, until it behaves per your expectations.</p>
+            </div>
+            <img align="right" class="lower-banner-img" src="assets/workspace.svg" />
+            <div class="bottom-anchored">
+                <a href="#visualization-area" class="waves-effect waves-light btn">Got it!</a>
             </div>
         </div>
+        <nav id="visualization-area">
+            <div class="nav-wrapper">
+                Interactive real-estate pricing model
+            </div>
+        </nav>
+      <div class="row top-div">
+        <div class="legend"></div>
+        <div class="visualization col-xs-8"></div>
+        <div class="interactive-panel">
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="crime" type="text" value="1.38799" class="crime-input validate">
+              <label for="crime">Crime</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="rooms" type="text" value="6.43" class="rooms-input validate">
+              <label for="rooms">Rooms</label>
+            </div>
+          </div>
+          <div class="row">
+              <button class="waves-effect waves-light btn bar-button" onclick="predictValue()">Predict Value</button>
+          </div>
+        </div>
+        <div class="acknowledgements">
+          <div class="centered-area">
+            <h2>Credits</h2>
+            <p>Designed and developed by Akash Shetye. © Akash Shetye 2017.</p>
+            <a href="http://www.freepik.com/free-photos-vectors/background">Crane vector created by Iconicbestiary - Freepik.com</a>
+            <p>App state managed using <a href="http://redux.js.org/">Redux</a>. Visualization made possible using <a href="https://d3js.org/">D3.js</a>. Machine Learning platform : <a href="https://bigml.com/">BigML.com</a>. Hosted on <a href="https://www.heroku.com/">Heroku</a>. Material design CSS by <a href="http://materializecss.com/">Materialize CSS.</a></p>
+          </div>
+        </div>
+        <div>
+          <div class="table row">
+            <table class="tsv-data">
+              <tr class="header">
+                <th>Index</th>
+                <th>Crime - Color</th>
+                <th>Rooms - X Axis</th>
+                <th>Median Value - Y Axis</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </body>
 </html>

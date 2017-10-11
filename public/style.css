@@ -1,3 +1,7 @@
+body {
+  font-family: Roboto;
+}
+
 nav {
   background-color: #00BFA5;
 }
@@ -13,27 +17,147 @@ nav {
   font-size: 1.2rem!important;
 }
 
-.into-card {
+.intro-card {
   min-height: 20vh;
   min-width: 100vw;
   background-color: #60BFE9;
+}
+
+.Explaination-card {
+  min-height: 80vh;
+  min-width: 100vw;
+  font-weight: 200;
+  background-color: #263238;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.Explaination-card div {
+  z-index: 2;
+}
+
+.bottom-anchored {
+  position: absolute;
+  bottom: 10rem;
+  left: calc(50vw - 3.5rem);
+}
+
+.bottom-anchored a {
+  background-color: #76FF03;
+  color: #000000;
+  font-weight: 400;
+}
+
+.banner-img {
+  max-height: 19vh;
+  padding-right: 1rem;
+  padding-left: 0.5rem;
+}
+
+.lower-banner-img {
+  max-height: 70vh;
+  padding-right: 1rem;
+  padding-left: 0.5rem;
+  position: absolute;
+  right: -20%;
+  bottom: 1.5rem;
 }
 
 .centered-area {
   max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
+  padding: 1rem;
+}
+
+.centered-area h2 {
+  font-family: 'Roboto Mono';
+  font-weight: 300;
+  font-size: 1.2rem!important;
+}
+
+.nav-wrapper {
+  font-family: 'Roboto Mono';
+  font-weight: 300;
+  padding-left: 1rem;
+}
+
+.visualization {
+  padding: 2rem;
+}
+
+.visualization {
+    cursor: move; /* fallback: no `url()` support or images disabled */
+    cursor: url(images/grab.cur); /* fallback: Internet Explorer */
+    cursor: -webkit-grab; /* Chrome 1-21, Safari 4+ */
+    cursor:    -moz-grab; /* Firefox 1.5-26 */
+    cursor:         grab; /* W3C standards syntax, should come least */
+}
+.visualization:active {
+    cursor: url(images/grabbing.cur);
+    cursor: -webkit-grabbing;
+    cursor:    -moz-grabbing;
+    cursor:         grabbing;
+}
+
+.loading-wrapper {
+  position: fixed;
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: rgba(0, 0, 0, 0.83);
+  z-index: 10;
+  visibility: hidden;
+}
+
+.message-area {
+  margin: 40vh auto;
+  width: 10vw;
+}
+
+.message-area h5 {
+  font-family: Roboto;
+  font-weight: 300;
+  color: #FFFFFF;
+  font-size: 1rem;
+}
+
+.message-area img {
+  max-width: 5rem;
+}
+
+.interactive-panel {
+  background-color: #fafafa;
+  padding: 1rem;
+}
+
+.bar-button {
+  width: 60vw;
+  left: calc(50% - 30vw);
+}
+
+.acknowledgements {
+  min-width: 100vw;
+  min-height: 40vh;
+  background-color: #263238;
+  padding-top: 3rem;
+  color: #FFFFFF;
+  font-weight: 200;
+}
+
+.input-field label {
+  top: -1.5rem;
 }
 
 .axis path,
 .axis line {
   fill: none;
-  stroke: #ffffff;
+  stroke: #000000;
   shape-rendering: crispEdges;
 }
 
 .axis .tick text{
-  fill: #ffffff;
+  fill: #000000;
 }
 
 .dot {
@@ -48,7 +172,7 @@ nav {
 
 .ghost-dot {
   stroke: none;
-  fill: rgba(255, 255, 255, 0.15);
+  fill: rgba(0, 0, 0, 0.15);
 }
 
 .table{
@@ -69,8 +193,10 @@ td {
 }
 
 .axis-label {
-  fill: rgba(5, 209, 255, 1);
-  font-size: 0.7rem;
+  fill: rgba(0, 0, 0, 1);
+  font-size: 0.8rem;
+  font-family: Roboto Mono;
+  font-weight: 300;
 }
 
 /*
@@ -128,7 +254,8 @@ image using the content attribute.
 }
 
 .crosshair {
-  stroke: #ffffff;
+  stroke: #000000;
+  stroke-width: 0.5;
   fill: none;
 }
 
@@ -142,4 +269,21 @@ image using the content attribute.
   border-radius: 2px;
 }
 
+.legend-label {
+  font-family: 'Roboto Mono';
+  font-weight: 300;
+  font-size: 0.7rem;
+}
+
+.legend-sub-label {
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.legend-sub-sub-label {
+  font-family: 'Roboto';
+  font-weight: 300;
+  font-size: 0.6rem;
+}
 

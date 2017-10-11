@@ -4,6 +4,8 @@ Visualization script in js
 
 var vizSVG = null;
 var viz = null;
+var legendSVG = null;
+var legend = null;
 var margin = {top: 20, right: 10, bottom: 50, left: 50};
 var width = 1000;
 var height = 500;
@@ -27,7 +29,7 @@ var predictedDotColor = "#F44336";
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
-  .offset([-10, 0])
+  //.offset([-10, 0])
   .html(function(d) {
     return "<strong>Market Value:</strong> &nbsp;<span>" + d["median-value"] + "</span><br/>\
             <strong>Crime:</strong> &emsp;&emsp;&emsp;&nbsp;<span>" + d["crime"] + "</span><br/>\
@@ -40,6 +42,7 @@ function initViz(){
     window.onunload = cleanUp;
     //Find the div
     var vizDiv = d3.select(".visualization");
+    var legendDiv = d3.select(".legend");
     //Add the d3 visualization svg
     vizSVG = vizDiv.append("svg")
                 //.attr("width", width + margin.left + margin.right)
@@ -48,8 +51,15 @@ function initViz(){
                 //.attr("height", "100%")
 		.attr("viewBox", "0 0 "+ (width + margin.left + margin.right) +" "+ (height + margin.top + margin.bottom) )
 		.attr("preserveAspectRatio", "none");
+    legendSVG = legendDiv.append("svg")
+        .attr("width", "100%")
+        .attr("viewBox", "0 0 "+ (width + margin.left + margin.right) +" "+ (78) )
+        .style("fill", "#000000")
+        .attr("preserveAspectRatio", "none");
     //Add margin and create a grouped object
     viz = vizSVG.append("g")
+                .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+    legend = legendSVG.append("g")
                 .attr("transform","translate(" + margin.left + "," + margin.top + ")");
     //Get the references to inputs
     crimeInput = d3.select(".crime-input");
@@ -58,6 +68,7 @@ function initViz(){
     store.subscribe(drawViz);
     store.subscribe(renderTable);
     store.subscribe(updateTable);
+    var scroll = new SmoothScroll('a[href*="#"]');
     parseData();
 }
 
@@ -119,6 +130,7 @@ function drawViz(){
 
     //Cleanup
     viz.selectAll("*").remove();
+    legend.selectAll("*").remove();
 
     // x-axis
     viz.append("g")
@@ -180,10 +192,75 @@ function drawViz(){
         .text("Number of Rooms (function of property size)");
     
     viz.call(tip);
+
+    // Draw the legend
+    legendSVG.style("background-color", "#ECEFF1");
+    legend.append("text")
+          .attr("x", 0)
+          .attr("y", 12)
+          .text("This machine learning model lets you predict the market ")
+          .attr("class", "legend-label");
+    legend.append("text")
+          .attr("x", 0)
+          .attr("y", 30)
+          .text("price of a property using 'Crime' and 'Number of Rooms' as known values.")
+          .attr("class", "legend-label");
+    legend.append("text")
+          .attr("x", 570)
+          .attr("y", 25) 
+          .text("Property - ")
+          .attr("class", "legend-sub-label");
+    legend.append("circle")
+            .attr("class", "dot")
+            .attr("r", function(d){
+                var anyValue = data[0]
+                return crimeMap(anyValue);
+            })
+            .attr("cx", 635)
+            .attr("cy", 20);
+    legend.append("text")
+          .attr("x", 670)
+          .attr("y", 25)
+          .text("Crime - ")
+          .attr("class", "legend-sub-label");
+    var lowestCrime = crimeScale.domain()[0];
+    var highestCrime = crimeScale.domain()[1];
+    legend.append("circle")
+          .attr("class", "dot")
+          .attr("r", function(d){
+              return crimeMap({"crime": lowestCrime});
+          })
+          .attr("cx", 720)
+          .attr("cy", 20);
+    legend.append("line")
+          .attr("x1", 735)
+          .attr("y1", 21)
+          .attr("x2", 770)
+          .attr("y2", 21)
+          .attr("stroke-width", 0.5)
+          .attr("stroke", "#000000");
+    legend.append("circle")
+          .attr("class", "dot")
+          .attr("r", function(d){
+              return crimeMap({"crime": highestCrime});
+          })
+          .attr("cx", 810)
+          .attr("cy", 20);
+    legend.append("text")
+          .attr("x", 810)
+          .attr("y", 10)
+          .text(highestCrime)
+          .attr("class", "legend-sub-sub-label");
+    legend.append("text")
+          .attr("x", 720)
+          .attr("y", 10)
+          .text(lowestCrime)
+          .attr("class", "legend-sub-sub-label");
 }
 
 function dragStart(d){
    //Drawing ghost dot
+   tip.hide();
    viz.append("circle")
 	    .attr("class", "ghost-dot")
 	    .attr("r", d3.select(this).attr("r"))
@@ -192,6 +269,7 @@ function dragStart(d){
 }
 
 function dragged(d){
+    tip.hide();
     d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
     //Convert cx position value to x-axis value
     store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
@@ -213,12 +291,14 @@ function dragged(d){
 }
 
 function dragEnded(d){
+    tip.hide();
     // dispatch action row modified with row details
     store.dispatch({type:MODIFY_ROW, row:{"index":d["index"], "rooms":xScale.invert(d3.event.x), "median-value":yScale.invert(d3.event.y), "crime":d["crime"]}});
     // remove ghost dot
     viz.selectAll(".ghost-dot").remove();
     //Remove previous x and y axis cross hairs
     viz.selectAll(".crosshair").remove();
+    //train();
 }
 
 /*
@@ -307,8 +387,8 @@ function updateTable(){
 
 function predictValue(){
     //set the top div to be loading-mask
-    var topDiv = d3.select(".top-div");
-    topDiv.attr('class', 'loading-mask');
+    var topDiv = d3.select(".loading-wrapper");
+    topDiv.style('visibility', 'visible');
     var storeState = store.getState();
     var data = storeState.pointData;
     //Get the value from the input
@@ -350,8 +430,8 @@ function predictValue(){
                     })});
                     //reset top div
                     //remove loading-mask
-                    var topDiv = d3.select(".loading-mask");
-                    topDiv.attr('class', 'top-div container-fluid');
+                    var topDiv = d3.select(".loading-wrapper");
+                    topDiv.style('visibility', 'hidden');
                     return {"predictionId" : json.predictionId};
                 }
             }).then(deletePrediction);
@@ -370,8 +450,8 @@ function train(){
     cleanUp();
     //reset the predicted count on the store
     //set the top div to be loading-mask
-    var topDiv = d3.select(".top-div");
-    topDiv.attr('class', 'loading-mask');
+    var topDiv = d3.select(".loading-wrapper");
+    topDiv.style('visibility', 'visible');
     store.dispatch({type: RESET_PREDICTION});
     createNewSource();
 }
@@ -479,8 +559,8 @@ function createNewModel(datasetIdObj){
                         store.dispatch({type:ADD_ML_MODEL, row: {"mlModel" : json.modelId}});
                         //remove the class on the top div
                         //set the top div to be loading-mask
-                        var topDiv = d3.select(".loading-mask");
-                        topDiv.attr('class', 'top-div container-fluid');
+                        var topDiv = d3.select(".loading-wrapper");
+                        topDiv.style('visibility', 'hidden');
                         return {"datasetId": json.modelId};
                     }
                 });
