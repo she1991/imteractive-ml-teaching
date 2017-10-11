@@ -101,6 +101,11 @@ nav {
     cursor:         grabbing;
 }
 
+.interactive-panel-header {
+  padding: 1rem 0;
+  background-color: #EEEEEE;
+}
+
 .loading-wrapper {
   position: fixed;
   min-height: 100vh;
